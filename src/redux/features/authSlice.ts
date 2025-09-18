@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/lib/api";
+import { stat } from "fs";
 
 interface User {
     id: string;
@@ -55,8 +56,8 @@ export const rehydrateAuth = createAsyncThunk(
             const response = await api.post("/auth/refresh-token")
             return response.data; // { accessToken, user }
         } catch (e: any) {
-            console.log("ahahhah",e);
-            
+            console.log("ahahhah", e);
+
             return rejectWithValue("Session expired");
         }
     }
@@ -96,7 +97,7 @@ const authSlice = createSlice({
                 state.isAuthenticated = false;
             })
 
-            // --- rehydration ---
+            // --- Rehydration ---
             .addCase(rehydrateAuth.pending, (state) => {
                 state.status = "loading";
             })
@@ -111,6 +112,23 @@ const authSlice = createSlice({
                 state.user = null;
                 state.accessToken = null;
                 state.isAuthenticated = false;
+            })
+
+            // --- Logout ---
+            .addCase(logoutUser.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(logoutUser.fulfilled, (state) => {
+                state.user = null;
+                state.accessToken = null;
+                state.isAuthenticated = false;
+                state.status = "idle";
+            })
+            .addCase(logoutUser.rejected, (state) => {
+                state.user = null;
+                state.accessToken = null;
+                state.isAuthenticated = false;
+                state.status = "idle";
             });
     },
 });
