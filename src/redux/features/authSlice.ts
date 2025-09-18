@@ -36,7 +36,17 @@ export const loginUser = createAsyncThunk(
         }
     }
 );
-
+export const registerUser = createAsyncThunk(
+    "auth/registerUser",
+    async (registerData: any, { rejectWithValue }) => {
+        try {
+            const response = await api.post("/auth/register", registerData);
+            return response.data; // { accessToken, user }
+        } catch (e: any) {
+            return rejectWithValue(e.response?.data?.message || "Registration failed");
+        }
+    }
+);
 export const logoutUser = createAsyncThunk(
     "auth/logoutUser",
     async (_, { rejectWithValue }) => {
@@ -47,7 +57,6 @@ export const logoutUser = createAsyncThunk(
         }
     }
 );
-
 export const rehydrateAuth = createAsyncThunk(
     "auth/rehydrateAuth",
     async (_, { rejectWithValue }) => {
@@ -96,7 +105,22 @@ const authSlice = createSlice({
                 state.accessToken = null;
                 state.isAuthenticated = false;
             })
-
+            // --- Register ---
+            .addCase(registerUser.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(registerUser.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.user = action.payload.user;
+                state.accessToken = action.payload.accessToken;
+                state.isAuthenticated = true;
+            })
+            .addCase(registerUser.rejected, (state) => {
+                state.status = "failed";
+                state.user = null;
+                state.accessToken = null;
+                state.isAuthenticated = false;
+            })
             // --- Rehydration ---
             .addCase(rehydrateAuth.pending, (state) => {
                 state.status = "loading";
