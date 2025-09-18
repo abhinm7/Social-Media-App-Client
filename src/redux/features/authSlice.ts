@@ -1,6 +1,5 @@
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/lib/api";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 
 interface User {
     id: string;
@@ -12,86 +11,109 @@ interface AuthState {
     user: User | null;
     accessToken: string | null;
     isAuthenticated: boolean;
-    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    status: "idle" | "loading" | "succeeded" | "failed";
 }
 
 const initialState: AuthState = {
     user: null,
     accessToken: null,
     isAuthenticated: false,
-    status: 'idle',
+    status: "idle",
 };
 
+// --- Thunks ---
 export const loginUser = createAsyncThunk(
-    'auth/loginUser',
-    async (loginData: any, { rejectWithValue }) => {
+    "auth/loginUser",
+    async (loginData: { email: string; password: string }, { rejectWithValue }) => {
         try {
-            const response = await api.post(`/auth/login`, loginData);
-            return response.data;
-        } catch (e: any) {
-            console.log("login failed",e);
+            const response = await api.post("/auth/login", loginData);
+            return response.data; // { accessToken, user }
 
-            return rejectWithValue(e.response.data.message || 'Login failed')
+        } catch (e: any) {
+            console.log("hello", e);
+            return rejectWithValue(e.response?.data?.message || "Login failed");
         }
     }
 );
 
 export const logoutUser = createAsyncThunk(
-    'auth/logoutUser',
+    "auth/logoutUser",
     async (_, { rejectWithValue }) => {
         try {
-            await api.post(`/auth/logout`)
+            await api.post("/auth/logout"); // clears cookie server-side
         } catch (e) {
-            console.log("Failed to remove refresh token from server, logging out on client.", e);
-            return rejectWithValue(e || 'Login failed')
+            return rejectWithValue("Logout failed");
         }
     }
-)
+);
+
+export const rehydrateAuth = createAsyncThunk(
+    "auth/rehydrateAuth",
+    async (_, { rejectWithValue }) => {
+        try {
+            // Calls backend, which reads refresh token from cookie
+            const response = await api.post("/auth/refresh-token")
+            return response.data; // { accessToken, user }
+        } catch (e: any) {
+            console.log("ahahhah",e);
+            
+            return rejectWithValue("Session expired");
+        }
+    }
+);
 
 const authSlice = createSlice({
-    name: 'auth',
+    name: "auth",
     initialState,
     reducers: {
         setAccessToken: (state, action: PayloadAction<string>) => {
             state.accessToken = action.payload;
-        }
+            state.isAuthenticated = true;
+        },
+        clearSession: (state) => {
+            state.user = null;
+            state.accessToken = null;
+            state.isAuthenticated = false;
+            state.status = "idle";
+        },
     },
     extraReducers: (builder) => {
         builder
-            //login cases
+            // --- Login ---
             .addCase(loginUser.pending, (state) => {
-                state.status = 'loading'
+                state.status = "loading";
             })
             .addCase(loginUser.fulfilled, (state, action) => {
-                state.status = 'succeeded'
-                state.isAuthenticated = true
-                state.user = action.payload.user
-                state.accessToken = action.payload.accessToken
-            }).addCase(loginUser.rejected, (state, action) => {
-                state.isAuthenticated = false
-                state.status = 'failed'
-                state.accessToken = null
-                state.user = null
+                state.status = "succeeded";
+                state.user = action.payload.user;
+                state.accessToken = action.payload.accessToken;
+                state.isAuthenticated = true;
+            })
+            .addCase(loginUser.rejected, (state) => {
+                state.status = "failed";
+                state.user = null;
+                state.accessToken = null;
+                state.isAuthenticated = false;
             })
 
-            //Logout cases
-            .addCase(logoutUser.pending, (state) => {
-                state.status = 'loading';
+            // --- rehydration ---
+            .addCase(rehydrateAuth.pending, (state) => {
+                state.status = "loading";
             })
-            .addCase(logoutUser.fulfilled, (state) => {
+            .addCase(rehydrateAuth.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.user = action.payload.user;
+                state.accessToken = action.payload.accessToken;
+                state.isAuthenticated = true;
+            })
+            .addCase(rehydrateAuth.rejected, (state) => {
+                state.status = "failed";
                 state.user = null;
                 state.accessToken = null;
                 state.isAuthenticated = false;
-                state.status = 'idle';
-            })
-            .addCase(logoutUser.rejected, (state) => {
-                state.user = null;
-                state.accessToken = null;
-                state.isAuthenticated = false;
-                state.status = 'idle';
             });
-    }
-})
+    },
+});
 
-export const { setAccessToken } = authSlice.actions;
+export const { setAccessToken, clearSession } = authSlice.actions;
 export default authSlice.reducer;

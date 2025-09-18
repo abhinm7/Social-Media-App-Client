@@ -1,50 +1,47 @@
 import axios from "axios";
+import { setAccessToken, clearSession } from "../redux/features/authSlice";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
-})
+  withCredentials: true, // send HttpOnly cookie automatically
+});
 
+// --- Request Interceptor ---
 api.interceptors.request.use(
   (config) => {
-    const { store } = require('../redux/store');
+    const { store } = require('../redux/store');  
     const accessToken = store.getState().auth.accessToken;
     if (accessToken) {
-      config.headers['Authorization'] = `Bearer ${accessToken}`;
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
     return config;
-  }, (err) => {
-    return Promise.reject(err);
-  }
-)
+  },
+  (err) => Promise.reject(err)
+);
 
+// --- Response Interceptor ---
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response && error.config) {
       const originalRequest = error.config;
-
+      const { store } = require('../redux/store');
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-          const { data } = await api.post('/identity/refresh');
-          const { store } = require('../redux/store');
-          const { setAccessToken } = require('../redux/features/authSlice');
-
+          // Ask backend for new access token (cookie will be sent automatically)
+          const { data } = await api.post("/auth/refresh");
           store.dispatch(setAccessToken(data.accessToken));
-          originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
 
+          // Retry original request with new token
+          originalRequest.headers["Authorization"] = `Bearer ${data.accessToken}`;
           return api(originalRequest);
         } catch (refreshError) {
-          const { store } = require('../redux/store');
-          const { logoutUser } = require('../redux/features/authSlice');
-
-          store.dispatch(logoutUser());
+          store.dispatch(clearSession());
           return Promise.reject(refreshError);
         }
       }
     }
-
     return Promise.reject(error);
   }
 );
