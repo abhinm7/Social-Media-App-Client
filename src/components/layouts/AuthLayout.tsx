@@ -8,7 +8,7 @@ export default function AuthLayout({ children, subtitle }: { children: React.Rea
     const letter = { hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0 } };
 
     return (
-        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Paper
                 elevation={3}
                 sx={{
@@ -26,9 +26,9 @@ export default function AuthLayout({ children, subtitle }: { children: React.Rea
                     borderColor: 'divider',
                 }}
             >
-                <Typography component="h1" variant="h5" sx={{ mb: 0.5, fontWeight: 'bold', color: 'primary.main', display: 'flex' }}>
+                <Typography component="h1" variant="h3" sx={{ mb: 0.5, fontWeight: 'bold', color: 'primary.main', display: 'flex', fontFamily: 'var(--font-bitcount)' }}>
                     <motion.span variants={sentence} initial="hidden" animate="visible">
-                        {'bloom'.split('').map((char, index) => (
+                        {'BLOOM'.split('').map((char, index) => (
                             <motion.span key={char + '-' + index} variants={letter}>{char}</motion.span>
                         ))}
                     </motion.span>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { RootState } from "@/redux/rootReducer";
 import { Box, CircularProgress } from "@mui/material";
+import Navbar from "@/components/layouts/Navbar";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -33,9 +34,6 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div>
-      <header>
-        <h1>APP 1</h1>
-      </header>
       <main>{children}</main>
     </div>
   );

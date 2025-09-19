@@ -3,13 +3,9 @@ import "./globals.css";
 import { ReduxProvider } from "@/redux/provider";
 import { AppInitializer } from "@/components/AppInitializer";
 import { Toaster } from 'react-hot-toast';
-
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
 import ThemeRegistry from "@/components/ThemeRegistry";
-
+import { roboto, bitcount } from './fonts'; 
+import Navbar from "@/components/layouts/Navbar";
 
 export const metadata: Metadata = {
   title: "Social Media App",
@@ -22,11 +18,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${roboto.variable} ${bitcount.variable}`}>
       <body>
         <ThemeRegistry>
           <ReduxProvider>
             <AppInitializer>
+              <Navbar/>
               {children}
               <Toaster position="bottom-center" />
             </AppInitializer>
