@@ -1,4 +1,4 @@
-import { Roboto, Bitcount } from 'next/font/google' 
+import { Bitcount, Roboto } from 'next/font/google' 
 
 export const roboto = Roboto({
   subsets: ['latin'],
@@ -8,7 +8,7 @@ export const roboto = Roboto({
 
 export const bitcount = Bitcount({
   subsets: ['latin'],
-  weight: ['200'], 
+  weight: ['100'], 
   style: ['normal'],
   variable: '--font-bitcount',
 })

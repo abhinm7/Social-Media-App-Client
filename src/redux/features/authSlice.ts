@@ -1,10 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/lib/api";
-import { stat } from "fs";
 
 interface User {
     id: string;
-    name: string;
+    username: string;
     email: string;
 }
 
@@ -95,6 +94,8 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.status = "succeeded";
+                console.log(action.payload.user);
+                
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken;
                 state.isAuthenticated = true;

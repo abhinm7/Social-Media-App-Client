@@ -3,8 +3,6 @@
 import { useState, useMemo } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box, IconButton, CssBaseline } from '@mui/material';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { ThemeContext } from '@/context/ThemeContext'; // 👈 1. Import the context
 
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
