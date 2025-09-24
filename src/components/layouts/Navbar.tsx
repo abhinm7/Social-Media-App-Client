@@ -8,7 +8,6 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/rootReducer';
 import Link from 'next/link';
-import { link } from 'fs';
 
 export default function Navbar() {
     const { toggleTheme, mode } = useThemeContext();

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { createPost } from '@/redux/features/postSlice'
 import { uploadMedia } from '@/redux/features/mediaSlice'
+import Image from 'next/image'
 
 const CreatePost = () => {
   const [content, setContent] = useState('');
@@ -90,7 +91,18 @@ const CreatePost = () => {
 
             {preview && (
               <Box sx={{ position: 'relative', mt: 2, width: 'fit-content' }}>
-                <img src={preview} alt="preview" style={{ maxHeight: '300px', borderRadius: '8px' }} />
+                <Image
+                  src={preview}
+                  alt="preview"
+                  width={300}
+                  height={300}
+                  unoptimized
+                  style={{
+                    maxHeight: '300px',
+                    width: 'auto',
+                    borderRadius: '8px'
+                  }}
+                />
                 <IconButton
                   size="small"
                   onClick={handleRemoveMedia}

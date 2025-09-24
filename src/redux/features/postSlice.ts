@@ -1,11 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from '@/lib/api';
 import { Post } from "@/types";
+import { AxiosError } from "axios";
 
 interface PostState {
     posts: Post[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     createStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
+}
+
+interface ApiErrorResponse {
+    message: string;
 }
 
 const initialState: PostState = {
@@ -20,8 +25,11 @@ export const fetchPosts = createAsyncThunk<Post[]>(
         try {
             const response = await api.get('/posts/all-posts');
             return response.data.populatedPosts;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || "Failed to fetch posts");
+        } catch (error) {
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+            return rejectWithValue(
+                axiosError.response?.data?.message || "Failed to fetch posts"
+            );
         }
     }
 );
@@ -32,8 +40,11 @@ export const createPost = createAsyncThunk(
         try {
             const response = await api.post('/posts/create-post', postData);
             return response.data.post;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || "Failed to create post");
+        } catch (error) {
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+            return rejectWithValue(
+                axiosError.response?.data?.message || "Failed to create post"
+            );
         }
     }
 );

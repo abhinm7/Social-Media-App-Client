@@ -1,7 +1,7 @@
 import React from 'react'
 import { Post } from "@/types";
 import { Avatar, Card, CardContent, CardHeader, CardMedia, Typography } from '@mui/material';
-import { pink, red } from '@mui/material/colors';
+import { pink } from '@mui/material/colors';
 import { formatDistanceToNow } from 'date-fns';
 
 const PostCard = ({ post }: { post: Post }) => {

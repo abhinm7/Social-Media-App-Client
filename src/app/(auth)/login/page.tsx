@@ -78,7 +78,7 @@ export default function LoginPage() {
                 </Button>
                 <Typography variant="caption" align="center" component="p">
                     <Link href="/register" underline="hover" sx={{ color: 'primary.light', fontWeight: 'bold' }}>
-                        Don't have an account? Sign Up
+                        Don&apos;t have an account? Sign Up
                     </Link>
                 </Typography>
             </Box>

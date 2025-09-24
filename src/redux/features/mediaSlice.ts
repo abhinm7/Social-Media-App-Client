@@ -1,9 +1,14 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "@/lib/api";
+import { AxiosError } from "axios";
 
 interface MediaUploadState {
     status: 'idle' | 'loading' | 'failed' | 'succeeded';
     error: string | null;
+};
+
+interface ApiErrorResponse {
+    message: string;
 };
 
 const initialState: MediaUploadState = {
@@ -11,24 +16,28 @@ const initialState: MediaUploadState = {
     error: null
 };
 
+
 export const uploadMedia = createAsyncThunk(
     'media/upload',
 
     async (file: File, { rejectWithValue }) => {
         const formData = new FormData();
 
-            formData.append('file', file)
+        formData.append('file', file)
 
         try {
             const response = await api.post('/media/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             })
             return response.data;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || "upload failed")
+        }  catch (error) {
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+            return rejectWithValue(
+                axiosError.response?.data?.message || "Upload failed"
+            );
         }
     }
-); 
+);
 
 const MediaSlice = createSlice({
     name: 'media',

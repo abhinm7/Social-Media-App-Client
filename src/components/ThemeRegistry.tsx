@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Box, IconButton, CssBaseline } from '@mui/material';
-import { ThemeContext } from '@/context/ThemeContext'; // 👈 1. Import the context
+import { CssBaseline } from '@mui/material';
+import { ThemeContext } from '@/context/ThemeContext'; 
 
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
     const [mode, setMode] = useState<'light' | 'dark'>('dark');
@@ -21,15 +21,12 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
         setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
     };
 
-    // This is the value that will be shared with other components
     const contextValue = { toggleTheme, mode };
 
     return (
-        // 👇 2. Wrap everything with the context provider
         <ThemeContext.Provider value={contextValue}>
             <ThemeProvider theme={theme}>
-                <CssBaseline /> {/* Helps apply background color and reset styles */}
-                {/* We can remove the icon from here, since it will be in the Navbar */}
+                <CssBaseline /> 
                 {children}
             </ThemeProvider>
         </ThemeContext.Provider>

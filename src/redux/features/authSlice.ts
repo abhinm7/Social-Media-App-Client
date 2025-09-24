@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/lib/api";
+import { AxiosError } from "axios";
 
 interface User {
     id: string;
@@ -12,6 +13,10 @@ interface AuthState {
     accessToken: string | null;
     isAuthenticated: boolean;
     status: "idle" | "loading" | "succeeded" | "failed";
+}
+
+interface ApiErrorResponse {
+    message: string;
 }
 
 const initialState: AuthState = {
@@ -29,20 +34,26 @@ export const loginUser = createAsyncThunk(
             const response = await api.post("/auth/login", loginData);
             return response.data; // { accessToken, user }
 
-        } catch (e: any) {
-            console.log("hello", e);
-            return rejectWithValue(e.response?.data?.message || "Login failed");
+        } catch (error) {
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+            console.log("login error", axiosError);
+            return rejectWithValue(
+                axiosError.response?.data?.message || "Login failed"
+            );
         }
     }
 );
 export const registerUser = createAsyncThunk(
     "auth/registerUser",
-    async (registerData: any, { rejectWithValue }) => {
+    async (registerData: { email: string; password: string; username: string }, { rejectWithValue }) => {
         try {
             const response = await api.post("/auth/register", registerData);
             return response.data; // { accessToken, user }
-        } catch (e: any) {
-            return rejectWithValue(e.response?.data?.message || "Registration failed");
+        } catch (error) {
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+            return rejectWithValue(
+                axiosError.response?.data?.message || "Registration failed"
+            );
         }
     }
 );
@@ -51,8 +62,11 @@ export const logoutUser = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             await api.post("/auth/logout"); // clears cookie server-side
-        } catch (e) {
-            return rejectWithValue("Logout failed");
+        } catch (error) {
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+            return rejectWithValue(
+                axiosError.response?.data?.message || "Logout failed"
+            );
         }
     }
 );
@@ -63,9 +77,9 @@ export const rehydrateAuth = createAsyncThunk(
             // Calls backend, which reads refresh token from cookie
             const response = await api.post("/auth/refresh-token")
             return response.data; // { accessToken, user }
-        } catch (e: any) {
-            console.log("ahahhah", e);
-
+        } catch (error) {
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+            console.log("rehydrate error", axiosError);
             return rejectWithValue("Session expired");
         }
     }
@@ -95,7 +109,7 @@ const authSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.status = "succeeded";
                 console.log(action.payload.user);
-                
+
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken;
                 state.isAuthenticated = true;

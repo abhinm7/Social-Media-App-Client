@@ -7,7 +7,7 @@ import { RootState } from '@/redux/rootReducer'
 import { fetchPosts } from '@/redux/features/postSlice'
 import { Box } from '@mui/material'
 
-const page = () => {
+const Page = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { posts, status } = useSelector((state: RootState) => state.posts);
 
@@ -31,4 +31,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
