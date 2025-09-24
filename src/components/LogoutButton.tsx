@@ -3,7 +3,8 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { logoutUser } from '../redux/features/authSlice';
-import { AppDispatch, RootState } from '../redux/store';
+import { AppDispatch } from '../redux/store';
+import { RootState } from '@/redux/rootReducer';
 
 export function LogoutButton() {
   const dispatch = useDispatch<AppDispatch>();

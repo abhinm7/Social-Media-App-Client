@@ -1,4 +1,3 @@
-// src/components/layouts/Navbar.tsx
 'use client';
 
 import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
@@ -6,9 +5,10 @@ import { LogoutButton } from '@/components/LogoutButton';
 import { useThemeContext } from '@/context/ThemeContext';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { useSelector } from 'react-redux'; // 👈 Import useSelector
-import { RootState } from '@/redux/rootReducer'; // 👈 Import RootState
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/rootReducer';
 import Link from 'next/link';
+import { link } from 'fs';
 
 export default function Navbar() {
     const { toggleTheme, mode } = useThemeContext();
@@ -17,11 +17,10 @@ export default function Navbar() {
     return (
         <AppBar position="sticky" elevation={0}>
             <Toolbar>
-                <Typography variant="h4" component="div" sx={{ flexGrow: 1, color: 'primary.main', fontWeight: 'bold', fontFamily: 'var(--font-bitcount)' }}>
+                <Typography variant="h4" component={Link} href="/" sx={{ flexGrow: 1, color: 'primary.main', fontWeight: 'bold', fontFamily: 'var(--font-bitcount)' }}>
                     BLOOM
                 </Typography>
 
-                {/* 👇 Conditionally render buttons */}
                 {isAuthenticated ? (
                     <LogoutButton />
                 ) : (

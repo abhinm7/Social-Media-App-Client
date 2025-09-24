@@ -1,21 +1,32 @@
 'use client'
-import { logoutUser } from '@/redux/features/authSlice'
-import React from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@/redux/store'
-import CreatePost from '../../components/features/CreatePost'
+import PostCard from '@/components/features/post/PostCard'
+import { RootState } from '@/redux/rootReducer'
+import { fetchPosts } from '@/redux/features/postSlice'
+import { Box } from '@mui/material'
 
 const page = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const handleLogin = async() => {
-    await dispatch(logoutUser());
-  }
+  const { posts, status } = useSelector((state: RootState) => state.posts);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchPosts());
+    }
+  }, [dispatch, status]);
+
   return (
     <div>
-      hello
-      <button onClick={handleLogin}>Logout</button>
-      <br />
-      <CreatePost/>
+
+      {status === 'succeeded' && (
+        <Box>
+          {posts.map((post) => (
+            <PostCard key={post._id} post={post} />
+          ))}
+        </Box>
+      )}
     </div>
   )
 }

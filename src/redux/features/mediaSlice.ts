@@ -13,39 +13,39 @@ const initialState: MediaUploadState = {
 
 export const uploadMedia = createAsyncThunk(
     'media/upload',
-    async (files: File[], { rejectWithValue }) => {
+
+    async (file: File, { rejectWithValue }) => {
         const formData = new FormData();
-        files.forEach(file => {
-            formData.append('media', file);
-        });
+
+            formData.append('file', file)
 
         try {
             const response = await api.post('/media/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             })
-            return response.data.media;
+            return response.data;
         } catch (err: any) {
             return rejectWithValue(err.response?.data?.message || "upload failed")
         }
     }
-);
+); 
 
 const MediaSlice = createSlice({
     name: 'media',
     initialState,
     reducers: {},
-    extraReducers:(builder)=>{
+    extraReducers: (builder) => {
         builder
-        .addCase(uploadMedia.pending,(state)=>{
-            state.status = 'loading';
-        })
-        .addCase(uploadMedia.fulfilled,(state)=>{
-            state.status='succeeded';
-        })
-        .addCase(uploadMedia.rejected,(state,action)=>{
-            state.status='failed';
-            state.error = action.payload as string;
-        })
+            .addCase(uploadMedia.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(uploadMedia.fulfilled, (state) => {
+                state.status = 'succeeded';
+            })
+            .addCase(uploadMedia.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload as string;
+            })
     }
 }
 )

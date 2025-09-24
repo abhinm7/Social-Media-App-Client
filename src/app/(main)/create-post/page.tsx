@@ -1,3 +1,5 @@
+'use client'
+
 import { RootState } from '@/redux/rootReducer'
 import { AppDispatch } from '@/redux/store'
 import { Close, PhotoCamera } from '@mui/icons-material'
@@ -6,10 +8,13 @@ import React, { ChangeEvent, FormEvent, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { createPost } from '@/redux/features/postSlice'
+import { uploadMedia } from '@/redux/features/mediaSlice'
+
 const CreatePost = () => {
   const [content, setContent] = useState('');
-  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -18,24 +23,51 @@ const CreatePost = () => {
   const { status: mediaStatus } = useSelector((state: RootState) => state.media);
   const isLoading = createStatus === 'loading' || mediaStatus === 'loading';
 
-  const handleRemoveMedia = (indexToRemove: Number) => {
-    setMediaFiles(prev => prev.filter((_, index) => index != indexToRemove))
-    setPreviews(prev => prev.filter((_, index) => index != indexToRemove))
-    toast.success("removed")
-  }
+  const handleRemoveMedia = () => {
+    setMediaFile(null);
+    setPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const fileArray = Array.from(e.target.files);
-      setMediaFiles(fileArray);
-
-      const previewsArray = fileArray.map(file => URL.createObjectURL(file));
-      setPreviews(previewsArray);
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setMediaFile(file);
+      setPreview(URL.createObjectURL(file));
     }
-  }
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    toast.error("hello")
+  };
 
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!content.trim && !mediaFile) {
+      toast.error("You can't create an empty post !");
+      return;
+    }
+
+    let mediaIDs: string[] = [];
+
+    if (mediaFile) {
+      const uploadResult = await dispatch(uploadMedia(mediaFile));
+      console.log(uploadResult);
+
+      if (uploadMedia.fulfilled.match(uploadResult)) {
+
+        mediaIDs = [uploadResult.payload.mediaId]
+        toast.success("Media upload success");
+      } else {
+        toast.error("Media upload failed. Please try again.");
+        return;
+      }
+    }
+
+    const createResult = await dispatch(createPost({ content, mediaIDs }));
+    if (createPost.fulfilled.match(createResult)) {
+      toast.success("Post created succesfully.");
+      setContent('');
+      handleRemoveMedia();
+    } else {
+      toast.error("Failed to create post.")
+    }
   }
 
   return (
@@ -56,43 +88,19 @@ const CreatePost = () => {
               onChange={(e) => setContent(e.target.value)}
             />
 
-
-            {previews.length > 0 && (
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {previews.map((src, index) => (
-
-                  <Box
-                    key={index}
-                    sx={{
-                      position: 'relative',
-                      width: 100,
-                      height: 100,
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <img
-                      src={src}
-                      alt="preview"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <IconButton
-                      size="small"
-                      onClick={() => handleRemoveMedia(index)}
-                      sx={{
-                        position: 'absolute',
-                        top: 2,
-                        right: 2,
-                        backgroundColor: 'rgba(0,0,0,0.5)',
-                        '&:hover': { backgroundColor: 'rgba(0,0,0,0.7)' }
-                      }}
-                    >
-                      <Close fontSize="small" sx={{ color: 'white' }} />
-                    </IconButton>
-                  </Box>
-                ))}
+            {preview && (
+              <Box sx={{ position: 'relative', mt: 2, width: 'fit-content' }}>
+                <img src={preview} alt="preview" style={{ maxHeight: '300px', borderRadius: '8px' }} />
+                <IconButton
+                  size="small"
+                  onClick={handleRemoveMedia}
+                  sx={{ position: 'absolute', top: 4, right: 4, backgroundColor: 'rgba(0,0,0,0.5)', '&:hover': { backgroundColor: 'rgba(0,0,0,0.7)' } }}
+                >
+                  <Close fontSize="small" sx={{ color: 'white' }} />
+                </IconButton>
               </Box>
             )}
+
           </Box>
         </Box>
 
@@ -111,7 +119,7 @@ const CreatePost = () => {
           <Button
             variant="contained"
             type="submit"
-            disabled={isLoading || (!content.trim() && mediaFiles.length === 0)}
+            disabled={isLoading || (!content.trim() && !mediaFile)}
             sx={{ borderRadius: 5, textTransform: 'none' }}
           >
             {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Post'}
