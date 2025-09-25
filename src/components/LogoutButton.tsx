@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { logoutUser } from '../redux/features/authSlice';
 import { AppDispatch } from '../redux/store';
 import { RootState } from '@/redux/rootReducer';
+import { LockOpen, PowerSettingsNew } from '@mui/icons-material';
 
 export function LogoutButton() {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,7 +19,7 @@ export function LogoutButton() {
 
   return (
     <button onClick={handleLogout} disabled={status === 'loading'}>
-      {status === 'loading' ? 'Logging out...' : 'Logout'}
+      {status === 'loading' ? <LockOpen/> : <PowerSettingsNew/>}
     </button>
   );
 }

@@ -8,7 +8,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/rootReducer';
 import Link from 'next/link';
-import { LockOutline, PowerSettingsNew } from '@mui/icons-material';
+import { LockOutline } from '@mui/icons-material';
 
 export default function Navbar() {
     const { toggleTheme, mode } = useThemeContext();
@@ -22,7 +22,7 @@ export default function Navbar() {
                 </Typography>
 
                 {isAuthenticated ? (
-                    <PowerSettingsNew />
+                    <LogoutButton />
                 ) : (
                     <Button color="inherit" component={Link} href="/login">
                         <LockOutline/>
