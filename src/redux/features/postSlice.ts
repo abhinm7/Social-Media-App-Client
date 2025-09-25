@@ -65,7 +65,9 @@ const postSlice = createSlice({
             .addCase(createPost.pending, (state) => { state.createStatus = 'loading'; })
             .addCase(createPost.fulfilled, (state, action) => {
                 state.createStatus = 'succeeded';
-                state.posts.unshift(action.payload);
+                if (action.payload && action.payload._id) {
+                    state.posts.unshift(action.payload);
+                }
             })
             .addCase(createPost.rejected, (state) => { state.createStatus = 'failed'; });
     },

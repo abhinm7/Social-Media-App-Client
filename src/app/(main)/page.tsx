@@ -5,7 +5,10 @@ import { AppDispatch } from '@/redux/store'
 import PostCard from '@/components/features/post/PostCard'
 import { RootState } from '@/redux/rootReducer'
 import { fetchPosts } from '@/redux/features/postSlice'
-import { Box } from '@mui/material'
+import { Box, CircularProgress, Container, Typography } from '@mui/material'
+
+import CreatePostButton from '@/components/CreatePostButton'
+import CreatePost from '@/components/features/post/CreatePost'
 
 const Page = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,16 +21,44 @@ const Page = () => {
   }, [dispatch, status]);
 
   return (
-    <div>
+    <Container maxWidth="sm" sx={{ mt: 4 }}>
+      <Typography
+        variant="h4"
+        component="h1"
+        sx={{
+          mb: 3,
+          color: 'text.primary',
+          fontFamily: 'var(--font-bitcount)',
+          textAlign: 'center'
+        }}
+      >Explore !
+      </Typography>
+
+      <CreatePost />
+
+      {status === 'loading' && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
 
       {status === 'succeeded' && (
         <Box>
           {posts.map((post) => (
             <PostCard key={post._id} post={post} />
           ))}
+
         </Box>
       )}
-    </div>
+
+      {status === 'failed' && (
+        <Typography color="error" sx={{ textAlign: 'center', my: 4 }}>
+          Failed to load posts. Please try again later.
+        </Typography>
+      )}
+
+      <CreatePostButton />
+    </Container>
   )
 }
 
