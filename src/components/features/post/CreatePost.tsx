@@ -41,7 +41,7 @@ const CreatePost = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (!content.trim() && !mediaFile) {
-            toast.error("You can't create an empty post !");
+            toast.error("You can't create an empty post !");    
             return;
         }
 
@@ -52,7 +52,7 @@ const CreatePost = () => {
             console.log(uploadResult);
 
             if (uploadMedia.fulfilled.match(uploadResult)) {
-
+                
                 mediaIDs = [uploadResult.payload.mediaId]
                 toast.success("Media upload success");
             } else {
