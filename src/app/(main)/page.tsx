@@ -21,7 +21,7 @@ const Page = () => {
   }, [dispatch, status]);
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
+    <Container maxWidth="sm" sx={{ mt: 3 }}>
       <Typography
         variant="h4"
         component="h1"

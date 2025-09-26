@@ -72,7 +72,7 @@ const CreatePost = () => {
     }
 
     return (
-        <Card sx={{ p: 2, mb: 3, backgroundColor: 'background.paper' }}>
+        <Card sx={{ boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)', p: 2, mb: 3, backgroundColor: 'background.paper' }}>
             <Box component="form" onSubmit={handleSubmit}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
 
@@ -81,7 +81,7 @@ const CreatePost = () => {
                     <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
 
                         <TextField
-                            placeholder={`What's up ${user?.username?.slice(0,4)} ?`}
+                            placeholder={`What's up ${user?.username?.slice(0, 4)} ?`}
                             multiline
                             variant='outlined'
                             value={content}

@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { ThemeContext } from '@/context/ThemeContext'; 
+import { ThemeContext } from '@/context/ThemeContext';
 
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
     const [mode, setMode] = useState<'light' | 'dark'>('dark');
@@ -12,8 +12,16 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
         palette: {
             mode,
             ...(mode === 'dark'
-                ? { primary: { main: '#EC7FA9' }, background: { default: '#121212', paper: '#000000' } }
-                : { primary: { main: '#EC7FA9' }, background: { default: '#FFB8E0', paper: '#FFEDFA' } }),
+                ? {
+                    primary: { main: '#EC7FA9' },
+                    background: { default: '#121212', paper: '#000000' },
+                    nav: { logo: '#FFFFFF',bg:'#121212' }
+                }
+                : {
+                    primary: { main: '#EC7FA9' },
+                    background: { default: '#FFFFFF', paper: '#FFFFFF' },
+                    nav: { logo: '#041562',bg:'#FFFFFF' }
+                }),
         },
     }), [mode]);
 
@@ -26,7 +34,7 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
     return (
         <ThemeContext.Provider value={contextValue}>
             <ThemeProvider theme={theme}>
-                <CssBaseline /> 
+                <CssBaseline />
                 {children}
             </ThemeProvider>
         </ThemeContext.Provider>

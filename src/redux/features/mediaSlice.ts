@@ -36,7 +36,7 @@ export const uploadMedia = createAsyncThunk(
                 axiosError.response?.data?.message || "Upload failed"
             );
         }
-    }
+    } 
 );
 
 const MediaSlice = createSlice({

@@ -8,7 +8,7 @@ const PostCard = ({ post }: { post: Post }) => {
     const autherName = post.user?.username || 'unknown user';
     const autherInitial = autherName[0]?.toUpperCase() || '?';
     return (
-        <Card sx={{ maxWidth: '100%', mb: 3, backgroundColor: 'background.paper', border: '2px dotted rgba(255, 192, 203, 0.1)', borderRadius: 2 }}>
+        <Card sx={{ boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)', maxWidth: '100%', mb: 3, backgroundColor: 'background.paper', border: '2px dotted rgba(255, 255, 255, 0.1)', borderRadius: 0 }}>
             <CardHeader
                 avatar={
                     <Avatar sx={{ bgcolor: pink[300] }} aria-label='user avatar'>

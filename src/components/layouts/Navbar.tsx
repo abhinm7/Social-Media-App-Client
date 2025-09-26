@@ -1,6 +1,6 @@
 'use client';
 
-import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, IconButton, alpha } from '@mui/material';
 import { LogoutButton } from '@/components/LogoutButton';
 import { useThemeContext } from '@/context/ThemeContext';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
@@ -15,9 +15,15 @@ export default function Navbar() {
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
     return (
-        <AppBar position="sticky" elevation={0}>
+        <AppBar position="sticky" sx={{
+                backgroundColor: (theme) => alpha(theme.palette.nav.bg, 0.8),
+
+                backdropFilter: 'blur(8px)',
+
+                borderBottom: (theme) => `1px dotted ${alpha(theme.palette.divider, 0.12)}`,
+            }} elevation={0}>
             <Toolbar>
-                <Typography variant="h4" component={Link} href="/" sx={{ flexGrow: 1, color: 'primary.main', fontWeight: 'bold', fontFamily: 'var(--font-bitcount)' }}>
+                <Typography variant="h4" component={Link} href="/" sx={{ flexGrow: 1, color: 'nav.logo', fontWeight: 'bold', fontFamily: 'var(--font-bitcount)' }}>
                     BLOOM
                 </Typography>
 
