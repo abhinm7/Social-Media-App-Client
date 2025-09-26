@@ -4,12 +4,18 @@ import { ReduxProvider } from "@/redux/provider";
 import { AppInitializer } from "@/components/AppInitializer";
 import { Toaster } from 'react-hot-toast';
 import ThemeRegistry from "@/components/ThemeRegistry";
-import { roboto, bitcount } from './fonts'; 
+import { roboto, bitcount } from './fonts';
 import Navbar from "@/components/layouts/Navbar";
 
 export const metadata: Metadata = {
-  title: "Social Media App",
+  title: "Bloom",
   description: "Interact each other",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 export default function RootLayout({
@@ -23,7 +29,7 @@ export default function RootLayout({
         <ThemeRegistry>
           <ReduxProvider>
             <AppInitializer>
-              <Navbar/>
+              <Navbar />
               {children}
               <Toaster position="bottom-center" />
             </AppInitializer>
