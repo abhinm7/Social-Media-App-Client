@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ReduxProvider } from "@/redux/provider";
 import { AppInitializer } from "@/components/AppInitializer";
@@ -10,12 +10,14 @@ import Navbar from "@/components/layouts/Navbar";
 export const metadata: Metadata = {
   title: "Bloom",
   description: "Interact each other",
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
+};
+
+
+export const viewport: Viewport = { // <-- Export it separately like this! ✨
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
