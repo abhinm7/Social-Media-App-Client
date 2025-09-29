@@ -34,8 +34,6 @@ export const fetchPosts = createAsyncThunk<
     async ({ page }, { rejectWithValue }) => {
         try {
             const response = await api.get(`/posts/all-posts?page=${page}`);
-            console.log("fetch post call",response);
-            
             return {
                 posts: response.data.populatedPosts,
                 totalPosts: response.data.totalPosts,
