@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { createPost } from '@/redux/features/postSlice'
 import { uploadMedia } from '@/redux/features/mediaSlice'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 const CreatePost = () => {
     const [content, setContent] = useState('');
@@ -23,6 +24,9 @@ const CreatePost = () => {
     const { createStatus } = useSelector((state: RootState) => state.posts);
     const { status: mediaStatus } = useSelector((state: RootState) => state.media);
     const isLoading = createStatus === 'loading' || mediaStatus === 'loading';
+
+    const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const router = useRouter();
 
     const handleRemoveMedia = () => {
         setMediaFile(null);
@@ -40,8 +44,14 @@ const CreatePost = () => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        if (!isAuthenticated) {
+            toast.error("Login to Continue");
+            router.push("/login");
+            return;
+        }
         if (!content.trim() && !mediaFile) {
-            toast.error("You can't create an empty post !");    
+            toast.error("You can't create an empty post !");
             return;
         }
 
@@ -52,7 +62,7 @@ const CreatePost = () => {
             console.log(uploadResult);
 
             if (uploadMedia.fulfilled.match(uploadResult)) {
-                
+
                 mediaIDs = [uploadResult.payload.mediaId]
                 toast.success("Media upload success");
             } else {

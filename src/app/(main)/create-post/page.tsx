@@ -28,6 +28,7 @@ export default function CreatePostPage() {
   const { createStatus } = useSelector((state: RootState) => state.posts);
   const { status: mediaStatus } = useSelector((state: RootState) => state.media);
   const isLoading = createStatus === 'loading' || mediaStatus === 'loading';
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -45,6 +46,13 @@ export default function CreatePostPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      toast.error("Please login or signup");
+      router.push("/login");
+      return;
+    }
+
     if (!content.trim() && !mediaFile) {
       toast.error("You can't create an empty post !");
       return;
@@ -87,7 +95,7 @@ export default function CreatePostPage() {
       <Card sx={{
         p: 3,
         backgroundColor: 'background.paper',
-        border: '2px dotted rgba(255, 192, 203, 0.5)', 
+        border: '2px dotted rgba(255, 192, 203, 0.5)',
       }}>
         <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', minHeight: '60vh' }}>
           <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flexGrow: 1 }}>

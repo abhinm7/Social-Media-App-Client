@@ -24,7 +24,7 @@ export default function Navbar() {
             }} elevation={0}>
             <Toolbar>
                 <Typography variant="h4" component={Link} href="/" sx={{ flexGrow: 1, color: 'nav.logo', fontWeight: 'bold', fontFamily: 'var(--font-bitcount)' }}>
-                    BLOOM
+                    BLOOM 
                 </Typography>
 
                 {isAuthenticated ? (
