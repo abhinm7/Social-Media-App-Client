@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 
-export const viewport: Viewport = { // <-- Export it separately like this! ✨
+export const viewport: Viewport = { 
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

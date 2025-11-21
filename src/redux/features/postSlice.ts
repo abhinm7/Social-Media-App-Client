@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from '@/lib/api';
 import { Post } from "@/types";
 import { AxiosError } from "axios";
+import { toggleLikePost, fetchComments, addCommentPost } from './interactionSlice';
 
 interface PostState {
     posts: Post[];
@@ -20,7 +21,8 @@ interface ApiErrorResponse {
 const initialState: PostState = {
     posts: [],
     status: 'idle',
-    createStatus: 'idle', page: 1,
+    createStatus: 'idle', 
+    page: 1,
     totalPosts: 0,
     hasMore: true,
 };
@@ -40,9 +42,7 @@ export const fetchPosts = createAsyncThunk<
             }
         } catch (error) {
             const axiosError = error as AxiosError<ApiErrorResponse>;
-            return rejectWithValue(
-                axiosError.response?.data?.message || "Failed to fetch posts"
-            );
+            return rejectWithValue(axiosError.response?.data?.message || "Failed to fetch posts");
         }
     }
 );
@@ -55,9 +55,7 @@ export const createPost = createAsyncThunk(
             return response.data.post;
         } catch (error) {
             const axiosError = error as AxiosError<ApiErrorResponse>;
-            return rejectWithValue(
-                axiosError.response?.data?.message || "Failed to create post"
-            );
+            return rejectWithValue(axiosError.response?.data?.message || "Failed to create post");
         }
     }
 );
@@ -76,31 +74,79 @@ const postSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchPosts.pending, (state) => { state.status = 'loading'; })
+            // --- Main Feed Logic ---
             .addCase(fetchPosts.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.posts = [...state.posts, ...action.payload.posts]
+                // Initialize interaction state for new posts
+                const newPosts = action.payload.posts.map(p => ({
+                    ...p,
+                    loadedComments: [],
+                    commentsPage: 0,
+                    areCommentsLoading: false
+                }));
+                state.posts = [...state.posts, ...newPosts];
                 state.totalPosts = action.payload.totalPosts;
                 state.page += 1;
                 state.hasMore = state.posts.length < state.totalPosts;
             })
-            .addCase(fetchPosts.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload
-            })
-            .addCase(createPost.pending, (state) => { state.createStatus = 'loading'; })
+            
             .addCase(createPost.fulfilled, (state, action) => {
                 state.createStatus = 'succeeded';
                 if (action.payload && action.payload._id) {
-                    state.posts.unshift(action.payload);
+                    // Add new post to top of feed with initialized interaction state
+                    state.posts.unshift({
+                        ...action.payload, 
+                        loadedComments: [], 
+                        commentsPage: 0 
+                    });
                 }
             })
-            .addCase(createPost.rejected, (state, action) => {
-                state.createStatus = 'failed';
-                // state.error = action.payload;
+            
+            // --- Interaction Logic (Listening to interactionSlice) ---
+            
+            .addCase(toggleLikePost.fulfilled, (state, action) => {
+                const post = state.posts.find(p => p._id === action.payload.postId);
+                if (post) {
+                    post.isLiked = action.payload.isLiked;
+                    post.likeCount = action.payload.likeCount;
+                }
+            })
+
+            .addCase(fetchComments.pending, (state, action) => {
+                 const post = state.posts.find(p => p._id === action.meta.arg.postId);
+                 if(post) {
+                     post.areCommentsLoading = true;
+                 }
+            })
+            .addCase(fetchComments.fulfilled, (state, action) => {
+                const post = state.posts.find(p => p._id === action.payload.postId);
+                if (post) {
+                    post.areCommentsLoading = false;
+                    post.commentsPage = action.payload.page;
+                    
+                    // Overwrite if page 1, otherwise append for infinite scroll
+                    if (action.payload.page === 1) {
+                        post.loadedComments = action.payload.comments;
+                    } else {
+                        post.loadedComments = [...(post.loadedComments || []), ...action.payload.comments];
+                    }
+                }
+            })
+
+            .addCase(addCommentPost.fulfilled, (state, action) => {
+                const post = state.posts.find(p => p._id === action.payload.postId);
+                if (post) {
+                    post.commentCount += 1;
+                    // Optimistically add new comment to the top of the list
+                    if (post.loadedComments) {
+                        post.loadedComments.unshift(action.payload.comment);
+                    } else {
+                        post.loadedComments = [action.payload.comment];
+                    }
+                }
             });
     },
 });
 
-export const {resetPosts} = postSlice.actions;
+export const { resetPosts } = postSlice.actions;
 export default postSlice.reducer;

@@ -20,7 +20,7 @@ export default function AuthLayout({ children, subtitle }: { children: React.Rea
                     justifyContent: 'center',
                     alignItems: 'center',
                     padding: 3,
-                    borderRadius: 2,
+                    borderRadius: 5,
                     backgroundColor: 'background.paper',
                     border: '1px solid',
                     borderColor: 'divider',

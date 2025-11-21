@@ -6,7 +6,7 @@ import { CssBaseline } from '@mui/material';
 import { ThemeContext } from '@/context/ThemeContext';
 
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
-    const [mode, setMode] = useState<'light' | 'dark'>('dark');
+    const [mode, setMode] = useState<'light' | 'dark'>('light');
 
     const theme = useMemo(() => createTheme({
         palette: {
@@ -18,9 +18,9 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
                     nav: { logo: '#FFFFFF',bg:'#121212' }
                 }
                 : {
-                    primary: { main: '#EC7FA9' },
+                    primary: { main: '#8F00FF' },
                     background: { default: '#FFFFFF', paper: '#FFFFFF' },
-                    nav: { logo: '#041562',bg:'#FFFFFF' }
+                    nav: { logo: '#8F00FF',bg:'#FFFFFF' }
                 }),
         },
     }), [mode]);

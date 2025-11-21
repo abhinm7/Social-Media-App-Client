@@ -30,12 +30,12 @@ export default function Navbar() {
                 {isAuthenticated ? (
                     <LogoutButton />
                 ) : (
-                    <Button color="inherit" component={Link} href="/login">
+                    <Button color="primary" component={Link} href="/login">
                         <LockOutline/>
                     </Button>
                 )}
 
-                <IconButton onClick={toggleTheme} color="inherit" sx={{ ml: 1 }}>
+                <IconButton color="primary" onClick={toggleTheme} sx={{ ml: 1 }}>
                     {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
                 </IconButton>
             </Toolbar>
