@@ -21,7 +21,7 @@ interface ApiErrorResponse {
 const initialState: PostState = {
     posts: [],
     status: 'idle',
-    createStatus: 'idle', 
+    createStatus: 'idle',
     page: 1,
     totalPosts: 0,
     hasMore: true,
@@ -89,21 +89,34 @@ const postSlice = createSlice({
                 state.page += 1;
                 state.hasMore = state.posts.length < state.totalPosts;
             })
-            
+
             .addCase(createPost.fulfilled, (state, action) => {
                 state.createStatus = 'succeeded';
                 if (action.payload && action.payload._id) {
                     // Add new post to top of feed with initialized interaction state
                     state.posts.unshift({
-                        ...action.payload, 
-                        loadedComments: [], 
-                        commentsPage: 0 
+                        ...action.payload,
+                        loadedComments: [],
+                        commentsPage: 0
                     });
                 }
             })
-            
+
             // --- Interaction Logic (Listening to interactionSlice) ---
-            
+            .addCase(toggleLikePost.pending, (state, action) => {
+                // action.meta.arg contains the postId passed to the thunk
+                const post = state.posts.find(p => p._id === action.meta.arg);
+                if (post) {
+                    // Flip the boolean immediately
+                    const wasLiked = post.isLiked;
+                    post.isLiked = !wasLiked;
+
+                    // We use Math.max to ensure count never goes below 0
+                    post.likeCount = wasLiked ? Math.max(0, post.likeCount - 1) : post.likeCount + 1;
+                }
+            })
+
+            // Sync with server truth when done 
             .addCase(toggleLikePost.fulfilled, (state, action) => {
                 const post = state.posts.find(p => p._id === action.payload.postId);
                 if (post) {
@@ -112,18 +125,29 @@ const postSlice = createSlice({
                 }
             })
 
+            // Rollback if server fails
+            .addCase(toggleLikePost.rejected, (state, action) => {
+                const post = state.posts.find(p => p._id === action.meta.arg);
+                if (post) {
+                    // Revert changes because the API call failed
+                    const wasLiked = post.isLiked;
+                    post.isLiked = !wasLiked;
+                    post.likeCount = wasLiked ? Math.max(0, post.likeCount - 1) : post.likeCount + 1;
+                }
+            })
+
             .addCase(fetchComments.pending, (state, action) => {
-                 const post = state.posts.find(p => p._id === action.meta.arg.postId);
-                 if(post) {
-                     post.areCommentsLoading = true;
-                 }
+                const post = state.posts.find(p => p._id === action.meta.arg.postId);
+                if (post) {
+                    post.areCommentsLoading = true;
+                }
             })
             .addCase(fetchComments.fulfilled, (state, action) => {
                 const post = state.posts.find(p => p._id === action.payload.postId);
                 if (post) {
                     post.areCommentsLoading = false;
                     post.commentsPage = action.payload.page;
-                    
+
                     // Overwrite if page 1, otherwise append for infinite scroll
                     if (action.payload.page === 1) {
                         post.loadedComments = action.payload.comments;
