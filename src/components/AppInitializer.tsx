@@ -1,16 +1,33 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useAppDispatch } from "@/redux/store"; // Use your typed hook!
 import { rehydrateAuth } from "@/redux/features/authSlice";
-import type { AppDispatch } from "@/redux/store";
+import { Box, CircularProgress } from '@mui/material';
 
 export function AppInitializer({ children }: { children: React.ReactNode }) {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    dispatch(rehydrateAuth());
+    const initApp = async () => {
+      await dispatch(rehydrateAuth());
+      
+      // Mark as done to show the app
+      setIsInitialized(true);
+    };
+
+    initApp();
   }, [dispatch]);
+
+  // spinner while we are loading
+  if (!isInitialized) {
+    return (
+      <Box sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return <>{children}</>;
 }
