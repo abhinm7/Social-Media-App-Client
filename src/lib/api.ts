@@ -16,8 +16,7 @@ export const api = axios.create({
 // --- Request Interceptor ---
 api.interceptors.request.use(
   (config) => {
-    // const { store } = require('../redux/store');
-    const accessToken = store.getState().auth.accessToken;
+    const accessToken = store?.getState().auth.accessToken;
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
@@ -32,15 +31,20 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response && error.config) {
       const originalRequest = error.config;
-      // `const { store } = require('../redux/store');`
+
+      // If the error came FROM the refresh endpoint, logout and give up.
+      if (originalRequest.url.includes("/auth/refresh")) {
+         store.dispatch(clearSession());
+         return Promise.reject(error);
+      }
+
+      // Normal 401 handling
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-          // Ask backend for new access token (cookie will be sent automatically)
           const { data } = await api.post("/auth/refresh");
           store.dispatch(setAccessToken(data.accessToken));
 
-          // Retry original request with new token
           originalRequest.headers["Authorization"] = `Bearer ${data.accessToken}`;
           return api(originalRequest);
         } catch (refreshError) {
