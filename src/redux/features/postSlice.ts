@@ -120,7 +120,7 @@ const postSlice = createSlice({
             .addCase(toggleLikePost.fulfilled, (state, action) => {
                 const post = state.posts.find(p => p._id === action.payload.postId);
                 if (post) {
-                    post.isLiked = action.payload.isLiked;
+                    post.isLiked = action.payload.liked;
                     post.likeCount = action.payload.likeCount;
                 }
             })

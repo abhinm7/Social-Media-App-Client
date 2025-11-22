@@ -12,7 +12,7 @@ export const toggleLikePost = createAsyncThunk(
     async (postId: string, { rejectWithValue }) => {
         try {
             const response = await api.post(`/posts/${postId}/like`);
-            return { postId, isLiked: response.data.isLiked, likeCount: response.data.likeCount };
+            return { postId, liked: response.data.liked, likeCount: response.data.likeCount };
         } catch (error) {
              const axiosError = error as AxiosError<ApiErrorResponse>;
             return rejectWithValue(axiosError.response?.data?.message || "Failed to like post");
