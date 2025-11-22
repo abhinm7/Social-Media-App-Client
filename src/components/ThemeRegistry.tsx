@@ -21,7 +21,10 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
                         border: '#444',
                         borderHover: '#666',
                         borderFocus: '#EC7FA9',
-                        text: '#FFFFFF'
+                        text: '#FFFFFF',
+                        avatar: '#EC7FA9',
+                        secondary: '#D2D2D2',
+                        inputBg: '##2C2C2C',
                     }
                 }
                 : {
@@ -33,7 +36,10 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
                         border: '#D2D2D2',
                         borderHover: '#dee2e6',
                         borderFocus: '#dee2e6',
-                        text: '#000000'
+                        text: '#000000',
+                        avatar: '#8F00FF',
+                        secondary: '#A9A9A9',
+                        inputBg: '#FFFFFF',
                     }
                 }),
         },

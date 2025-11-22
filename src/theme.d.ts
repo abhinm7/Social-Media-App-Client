@@ -8,10 +8,13 @@ declare module '@mui/material/styles' {
     };
     comment: {
       bg: string;
+      inputBg: string; 
       border: string;
       borderHover: string;
       borderFocus: string;
       text: string;
+      avatar:string;
+      secondary:string;
     };
   }
   interface PaletteOptions {
@@ -21,10 +24,13 @@ declare module '@mui/material/styles' {
     };
     comment?: {
       bg: string;
+      inputBg: string; 
       border: string;
       borderHover: string;
       borderFocus: string;
       text: string;
+      avatar:string;
+      secondary:string;
     };
   }
 }

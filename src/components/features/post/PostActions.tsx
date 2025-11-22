@@ -1,6 +1,6 @@
 import React from 'react';
 import { CardActions, IconButton, Typography } from '@mui/material';
-import { pink, red, blue } from '@mui/material/colors';
+import { red, blue } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
