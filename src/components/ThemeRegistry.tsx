@@ -15,12 +15,26 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
                 ? {
                     primary: { main: '#EC7FA9' },
                     background: { default: '#121212', paper: '#000000' },
-                    nav: { logo: '#FFFFFF',bg:'#121212' }
+                    nav: { logo: '#FFFFFF', bg: '#121212' },
+                    comment: {
+                        bg: '#1A1A1A',
+                        border: '#444',
+                        borderHover: '#666',
+                        borderFocus: '#EC7FA9',
+                        text: '#FFFFFF'
+                    }
                 }
                 : {
                     primary: { main: '#8F00FF' },
                     background: { default: '#FFFFFF', paper: '#FFFFFF' },
-                    nav: { logo: '#8F00FF',bg:'#FFFFFF' }
+                    nav: { logo: '#8F00FF', bg: '#FFFFFF' },
+                    comment: {
+                        bg: '#FAFAFA',
+                        border: '#D2D2D2',
+                        borderHover: '#dee2e6',
+                        borderFocus: '#dee2e6',
+                        text: '#000000'
+                    }
                 }),
         },
     }), [mode]);
@@ -32,11 +46,11 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
     const contextValue = { toggleTheme, mode };
 
     return (
-        <ThemeContext.Provider value={contextValue}>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                {children}
-            </ThemeProvider>
-        </ThemeContext.Provider>
+            <ThemeContext.Provider value={contextValue}>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    {children}
+                </ThemeProvider>
+            </ThemeContext.Provider>
     );
 }

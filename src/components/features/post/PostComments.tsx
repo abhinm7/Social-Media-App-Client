@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { 
-    Box, TextField, IconButton, List, ListItem, 
-    ListItemAvatar, Avatar, ListItemText, Typography, 
-    Button, CircularProgress, Collapse, CardContent 
+import {
+    Box, TextField, IconButton, List, ListItem,
+    ListItemAvatar, Avatar, ListItemText, Typography,
+    Button, CircularProgress, Collapse, CardContent
 } from '@mui/material';
-import { grey } from '@mui/material/colors';
 import SendIcon from '@mui/icons-material/Send';
 import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -30,9 +29,8 @@ const PostComments: React.FC<PostCommentsProps> = ({ post, expanded }) => {
             router.push("/login");
             return;
         }
-
         if (!commentText.trim()) return;
-        
+
         await dispatch(addCommentPost({ postId: post._id, content: commentText }));
         setCommentText("");
     };
@@ -44,47 +42,108 @@ const PostComments: React.FC<PostCommentsProps> = ({ post, expanded }) => {
 
     return (
         <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <CardContent sx={{ bgcolor: '#fafafa', pt: 2 }}>
-                {/* Input Section */}
+            <CardContent sx={(theme) => ({
+                bgcolor: theme.palette.comment.bg,
+                pt: 2,
+                borderRadius: 2
+            })}>
+                
+                {/* COMMENT INPUT */}
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 3 }}>
-                    <TextField 
-                        fullWidth 
+                    <TextField
+                        fullWidth
                         multiline
                         maxRows={3}
-                        size="small" 
-                        placeholder="Add a comment..." 
+                        size="small"
+                        placeholder="Add a comment..."
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
-                        sx={{ bgcolor: 'white' }}
+                        sx={(theme) => ({
+                            bgcolor: theme.palette.comment.inputBg || theme.palette.background.paper,
+                            color: theme.palette.comment.text,
+                            '& .MuiOutlinedInput-root': {
+                                color: theme.palette.comment.text,
+                                '& fieldset': {
+                                    border: `2px dotted ${theme.palette.comment.border}`,
+                                    borderRadius: '8px'
+                                },
+                                '&:hover fieldset': {
+                                    border: `2px dotted ${theme.palette.comment.borderHover}`,
+                                },
+                                '&.Mui-focused fieldset': {
+                                    border: `2px dotted ${theme.palette.comment.borderFocus}`,
+                                },
+                            },
+                        })}
                     />
-                    <IconButton onClick={handleCommentSubmit} disabled={!commentText.trim()} color="primary">
+
+                    <IconButton
+                        onClick={handleCommentSubmit}
+                        disabled={!commentText.trim()}
+                        sx={(theme) => ({
+                            color: theme.palette.primary.main
+                        })}
+                    >
                         <SendIcon />
                     </IconButton>
                 </Box>
 
-                {/* List Section */}
+                {/* COMMENT LIST */}
                 <List disablePadding>
                     {post.loadedComments?.map((comment: Comment) => (
-                        <ListItem alignItems="flex-start" key={comment._id} sx={{ px: 0 }}>
+                        <ListItem 
+                            key={comment._id}
+                            alignItems="flex-start"
+                            sx={{ px: 0, mb: 1 }}
+                        >
                             <ListItemAvatar>
-                                <Avatar sx={{ width: 32, height: 32, fontSize: 14, bgcolor: grey[400] }}>
+                                <Avatar 
+                                    sx={(theme) => ({
+                                        width: 32,
+                                        height: 32,
+                                        fontSize: 14,
+                                        bgcolor: theme.palette.comment.avatar
+                                    })}
+                                >
                                     {comment.user?.username?.[0]?.toUpperCase() || '?'}
                                 </Avatar>
                             </ListItemAvatar>
+
                             <ListItemText
                                 primary={
-                                    <Typography variant="subtitle2" component="span" fontWeight="bold">
+                                    <Typography 
+                                        variant="subtitle2" 
+                                        component="span" 
+                                        fontWeight="bold"
+                                        sx={(theme) => ({
+                                            color: theme.palette.comment.text
+                                        })}
+                                    >
                                         {comment.user?.username || 'Unknown'}
                                     </Typography>
                                 }
                                 secondary={
                                     <>
-                                        <Typography component="span" variant="body2" color="text.primary" display="block">
+                                        <Typography
+                                            component="span"
+                                            variant="body2"
+                                            display="block"
+                                            sx={(theme) => ({
+                                                color: theme.palette.comment.text
+                                            })}
+                                        >
                                             {comment.content}
                                         </Typography>
-                                        <Typography component="span" variant="caption" color="text.secondary">
-                                            {comment.createdAt 
-                                                ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true }) 
+
+                                        <Typography
+                                            component="span"
+                                            variant="caption"
+                                            sx={(theme) => ({
+                                                color: theme.palette.comment.secondary
+                                            })}
+                                        >
+                                            {comment.createdAt
+                                                ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })
                                                 : 'Just now'}
                                         </Typography>
                                     </>
@@ -94,19 +153,23 @@ const PostComments: React.FC<PostCommentsProps> = ({ post, expanded }) => {
                     ))}
                 </List>
 
-                {/* Load More Action */}
+                {/* LOAD MORE BUTTON */}
                 {post.commentCount > (post.loadedComments?.length || 0) && (
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                        <Button 
-                            size="small" 
+                        <Button
+                            size="small"
                             onClick={handleLoadMoreComments}
                             disabled={post.areCommentsLoading}
-                            sx={{ textTransform: 'none' }}
+                            sx={(theme) => ({
+                                textTransform: 'none',
+                                color: theme.palette.primary.main
+                            })}
                         >
                             {post.areCommentsLoading ? <CircularProgress size={20} /> : "View more comments"}
                         </Button>
                     </Box>
                 )}
+                
             </CardContent>
         </Collapse>
     );

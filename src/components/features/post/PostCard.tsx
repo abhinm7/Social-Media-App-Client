@@ -33,24 +33,29 @@ const PostCard = ({ post }: { post: Post }) => {
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
-        // Fetch initial comments only if expanding and none are loaded yet
         if (!expanded && (!post.loadedComments || post.loadedComments.length === 0) && post.commentCount > 0) {
             dispatch(fetchComments({ postId: post._id, page: 1 }));
         }
     };
 
     return (
-        <Card sx={{ boxShadow: '0 4px 12px 0 rgba(0, 0, 0, 0.05)', maxWidth: '100%', mb: 3, borderRadius: 4 }}>
+        <Card sx={{ 
+            boxShadow: '0 4px 12px 0 rgba(0, 0, 0, 0.05)', 
+            maxWidth: '100%', 
+            mb: 3, 
+            borderRadius: 4,
+            border: (theme) => `1px dotted ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`
+        }}>
             {/* Header Section */}
-            <CardHeader
-                avatar={
-                    <Avatar sx={{ bgcolor: pink[500] }} aria-label='user avatar'>
+                <CardHeader
+                    avatar={
+                         <Avatar sx={{ bgcolor: 'primary.main' }} aria-label='user avatar'>
                         {authorInitial}
                     </Avatar>
-                }
-                title={<Typography fontWeight="bold">{authorName}</Typography>}
-                subheader={formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-            />
+                    }
+                    title={<Typography fontWeight="bold">{authorName}</Typography>}
+                    subheader={formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                />
             
             {/* Media Section */}
             {post.media && post.media.length > 0 && (

@@ -86,7 +86,7 @@ const CreatePost = () => {
             <Box component="form" onSubmit={handleSubmit}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
 
-                    <Avatar sx={{ mt: 1 }}>{user?.username?.[0].toUpperCase()}</Avatar>
+                    <Avatar sx={{ mt: 1, bgcolor: 'primary.main' }}>{user?.username?.[0].toUpperCase()}</Avatar>
 
                     <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
 
@@ -155,7 +155,19 @@ const CreatePost = () => {
                         variant="contained"
                         type="submit"
                         disabled={isLoading || (!content.trim() && !mediaFile)}
-                        sx={{ borderRadius: 5, textTransform: 'none' }}
+                        sx={(theme) => ({ 
+                            bgcolor: 'primary.main', 
+                            borderRadius: 5, 
+                            textTransform: 'none',
+                            '&.Mui-disabled': {
+                                bgcolor: theme.palette.mode === 'dark' 
+                                    ? 'rgba(236, 127, 169, 0.1)'  
+                                    : 'rgba(144, 202, 249, 0.2)', 
+                                color: theme.palette.mode === 'dark' 
+                                    ? 'rgba(255, 255, 255, 0.3)' 
+                                    : 'rgba(0, 0, 0, 0.3)'
+                            }
+                        })}
                     >
                         {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Post'}
                     </Button>
